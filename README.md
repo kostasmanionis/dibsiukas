@@ -1,0 +1,1 @@
+A bot that doesn't do anything

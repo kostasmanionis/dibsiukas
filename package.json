@@ -1,0 +1,23 @@
+{
+  "name": "dibsiukas",
+  "version": "0.0.1",
+  "main": "index.js",
+  "author": "Kostas Manionis <kostas@1stdibs.com>",
+  "license": "MIT",
+  "engines": {
+    "node": ">=7.6.0"
+  },
+  "dependencies": {
+    "botkit": "^0.5.4",
+    "dotenv": "^4.0.0",
+    "express": "^4.15.2",
+    "spotify-web-api-node": "^2.3.6",
+    "winston": "^2.3.1"
+  },
+  "devDependencies": {
+    "nodemon": "^1.11.0"
+  },
+  "scripts": {
+    "dev": "nodemon -r dotenv/config ./src/index.js"
+  }
+}
