@@ -3,5 +3,8 @@
         "1stdibs",
         "1stdibs/es6",
         "1stdibs/node"
-    ]
+    ],
+    "rules": {
+        "dot-notation": "off"
+    }
 }
