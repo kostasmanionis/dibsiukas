@@ -50,7 +50,7 @@ controller.hears('pause', TYPES_MESSAGES, function (bot, message) {
     bot.reply(message, `:no_entry_sign: :radio: :musical_note:`);
 });
 
-controller.hears('queue (.*)', TYPES_MESSAGES, function (bot, message) {
+controller.hears('queue', TYPES_MESSAGES, function (bot, message) {
     bot.reply(message, getReply(message, 'queue'));
 });
 
@@ -63,4 +63,8 @@ controller.hears(['volume (.*)', 'volume'], TYPES_MESSAGES, async function (bot,
         const currentVolume = await spotify.getCurrentVolume();
         bot.reply(message, `:radio: :musical_note: ${currentVolume}`);
     }
+});
+
+controller.hears('help', TYPES_MESSAGES, function (bot, message) {
+    bot.reply(message, 'Too lazy to add a help response :jack_o_lantern: :jack_o_lantern: :jack_o_lantern: ');
 });
