@@ -38,11 +38,15 @@ controller.hears(['play <(.*)>', 'play', 'resume'], TYPES_MESSAGES, function (bo
 
     if (uri) {
         spotify.play(uri);
-        bot.reply(message, `Playing ${uri}`);
     } else {
         spotify.resume();
-        bot.reply(message, `Resuming playback`);
     }
+
+    bot.api.reactions.add({
+        timestamp: message.ts,
+        channel: message.channel,
+        name: 'ok_hand'
+    });
 });
 
 controller.hears('pause', TYPES_MESSAGES, function (bot, message) {
@@ -58,7 +62,11 @@ controller.hears(['volume (.*)', 'volume'], TYPES_MESSAGES, async function (bot,
     const volumeToSet = message.match[1];
     if (volumeToSet) {
         spotify.setVolume(volumeToSet);
-        bot.reply(message, `:radio: :musical_note: :point_right: ${volumeToSet}`);
+        bot.api.reactions.add({
+            timestamp: message.ts,
+            channel: message.channel,
+            name: 'ok_hand'
+        });
     } else {
         const currentVolume = await spotify.getCurrentVolume();
         bot.reply(message, `:radio: :musical_note: ${currentVolume}`);
