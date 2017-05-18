@@ -25,9 +25,10 @@ function getReply(message, action) {
     return `Sorry <@${message.user}>, I can't ${action} songs yet :shiba-sad:`;
 }
 
-controller.hears('play (.*)', TYPES_MESSAGES, function (bot, message) {
-    // const songUri = message.match[1];
-    bot.reply(message, getReply(message, 'play'));
+controller.hears('play <(.*)>', TYPES_MESSAGES, function (bot, message) {
+    const trackUri = message.match[1];
+    spotify.play(trackUri);
+    bot.reply(message, `Playing ${trackUri}`);
 });
 
 controller.hears('pause (.*)', TYPES_MESSAGES, function (bot, message) {
