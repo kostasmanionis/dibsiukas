@@ -11,8 +11,6 @@ const slackBot = controller.spawn({
 
 const spotify = new Spotify();
 
-spotify.connect();
-
 slackBot.startRTM(function (err) {
     if (err) {
         throw new Error(err);
@@ -24,6 +22,11 @@ const TYPES_MESSAGES = 'direct_message, direct_mention';
 function getReply(message, action) {
     return `Sorry <@${message.user}>, I can't ${action} songs yet :shiba-sad:`;
 }
+
+controller.hears('connect spotify', TYPES_MESSAGES, async function (bot, message) {
+    const authUrl = await spotify.initAuthorize();
+    bot.reply(message, `${authUrl}`);
+});
 
 controller.hears('playing', TYPES_MESSAGES, async function (bot, message) {
     const currentTrackUri = await spotify.getCurrentTrackUri();

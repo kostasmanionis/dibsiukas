@@ -11,6 +11,12 @@ module.exports = class SpotifyAuth {
         this.loadTokensFromCache();
 
         this.onTokenRefreshLoopTick = this.onTokenRefreshLoopTick.bind(this);
+
+        try {
+            this.setTokens();
+        } catch (err) {
+            console.log('Needs authorization');
+        }
     }
 
     setApi() {
@@ -32,19 +38,6 @@ module.exports = class SpotifyAuth {
     cacheTokenData(tokenData) {
         this.tokenData = tokenData;
         fs.writeFileSync(TOKEN_CACHE_LOCATION, JSON.stringify(tokenData), 'utf-8');
-    }
-
-    async connect() {
-        if (this.tokenData === null) {
-            await this.initAuthorize();
-        } else {
-            try {
-                await this.setTokens();
-            } catch (err) {
-                await this.initAuthorize();
-                await this.setTokens();
-            }
-        }
     }
 
     async handleReceivedAuthCode(token) {
@@ -116,33 +109,37 @@ module.exports = class SpotifyAuth {
         }
     }
 
-    async initAuthorize() {
-        return new Promise(resolve => {
-            const app = express();
-            const scopes = [
-                'user-read-private',
-                'user-read-email',
-                'user-modify-playback-state',
-                'playlist-modify-public',
-                'playlist-modify-private',
-                'user-read-playback-state'
-            ];
-            const state = 'kostas';
+    generateAuthUrl() {
+        const scopes = [
+            'user-read-private',
+            'user-read-email',
+            'user-modify-playback-state',
+            'playlist-modify-public',
+            'playlist-modify-private',
+            'user-read-playback-state'
+        ];
+        const state = 'kostas';
 
-            const authorizeURL = this.remoteApi.createAuthorizeURL(scopes, state);
-            console.log(authorizeURL);
+        return this.remoteApi.createAuthorizeURL(scopes, state);
+    }
 
-            app.get('/auth', (req, res) => {
-                if (req.query.code) {
-                    this.handleReceivedAuthCode(req.query.code);
-                }
-                res.send('Thanks!');
-                resolve();
-            });
+    setupAuthServer() {
+        this.app = express();
 
-            app.listen(process.env.NODE_PORT, function () {
-                console.log(`Authorization server listening on ${process.env.NODE_PORT}!`);
-            });
+        this.app.get('/auth', (req, res) => {
+            if (req.query.code) {
+                this.handleReceivedAuthCode(req.query.code);
+            }
+            res.send('Thanks!');
         });
+
+        this.app.listen(process.env.NODE_PORT, function () {
+            console.log(`Authorization server listening on ${process.env.NODE_PORT}!`);
+        });
+    }
+
+    initAuthorize() {
+        this.setupAuthServer();
+        return this.generateAuthUrl();
     }
 };
