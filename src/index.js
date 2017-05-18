@@ -34,14 +34,15 @@ controller.hears('playing', TYPES_MESSAGES, async function (bot, message) {
 });
 
 controller.hears(['play <(.*)>', 'play', 'resume'], TYPES_MESSAGES, function (bot, message) {
-    const trackUri = message.match[1];
-    if (trackUri) {
-        bot.reply(message, `Playing ${trackUri}`);
+    const uri = message.match[1];
+
+    if (uri) {
+        spotify.play(uri);
+        bot.reply(message, `Playing ${uri}`);
     } else {
+        spotify.resume();
         bot.reply(message, `Resuming playback`);
     }
-    spotify.play(trackUri);
-
 });
 
 controller.hears('pause', TYPES_MESSAGES, function (bot, message) {

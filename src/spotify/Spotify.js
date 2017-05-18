@@ -1,4 +1,10 @@
 const SpotifyAuth = require('./SpotifyAuth');
+const {
+    getUriType,
+    TYPE_TRACK,
+    TYPE_ALBUM,
+    TYPE_PLAYLIST
+} = require('../utils/spotifyUtils');
 
 module.exports = class Spotify extends SpotifyAuth {
 
@@ -8,12 +14,32 @@ module.exports = class Spotify extends SpotifyAuth {
         return this;
     }
 
-    play(trackUri) {
-        const playOptions = {
+    playTrack(trackUri) {
+        this.remoteApi.play({
             uris: [trackUri]
-        };
-        const options = trackUri ? playOptions : undefined;
-        this.remoteApi.playTracks(options);
+        });
+    }
+
+    playAlbumOrPlaylist(uri) {
+        this.remoteApi.play({
+            context_uri: uri
+        });
+    }
+
+    play(uri) {
+        switch (getUriType(uri)) {
+            case TYPE_ALBUM:
+            case TYPE_PLAYLIST:
+                this.playAlbumOrPlaylist(uri);
+                break;
+            case TYPE_TRACK:
+                this.playTrack(uri);
+                break;
+        }
+    }
+
+    resume() {
+        this.remoteApi.play();
     }
 
     pause() {
