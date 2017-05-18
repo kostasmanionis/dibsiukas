@@ -35,7 +35,14 @@ module.exports = class Spotify extends SpotifyAuth {
             case TYPE_TRACK:
                 this.playTrack(uri);
                 break;
+            case 'next':
+                this.playNext(uri);
+                break;
         }
+    }
+
+    playNext() {
+        this.remoteApi.playNext();
     }
 
     resume() {

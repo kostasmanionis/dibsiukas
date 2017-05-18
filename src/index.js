@@ -33,6 +33,15 @@ controller.hears('playing', TYPES_MESSAGES, async function (bot, message) {
     bot.reply(message, `<${currentTrackUri}>`);
 });
 
+controller.hears('play next', TYPES_MESSAGES, async function (bot, message) {
+    spotify.playNext();
+    bot.api.reactions.add({
+        timestamp: message.ts,
+        channel: message.channel,
+        name: 'ok_hand'
+    });
+});
+
 controller.hears(['play <(.*)>', 'play', 'resume'], TYPES_MESSAGES, function (bot, message) {
     const uri = message.match[1];
 
