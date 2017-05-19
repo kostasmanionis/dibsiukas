@@ -133,8 +133,8 @@ module.exports = class SpotifyAuth {
             res.send('Thanks!');
         });
 
-        this.app.listen(process.env.NODE_PORT, function () {
-            console.log(`Authorization server listening on ${process.env.NODE_PORT}!`);
+        this.app.listen(process.env.AUTH_PORT, function () {
+            console.log(`Authorization server listening on ${process.env.AUTH_PORT}!`);
         });
     }
 
