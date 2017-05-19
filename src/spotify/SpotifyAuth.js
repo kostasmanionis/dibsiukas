@@ -96,7 +96,7 @@ module.exports = class SpotifyAuth {
 
     async onTokenRefreshLoopTick() {
         const expiresIn = this.getTimeUntilTokenExpires();
-        if (expiresIn < 60) {
+        if (expiresIn < 120) {
             const refreshResponse = await this.remoteApi.refreshAccessToken();
             this.tokenData.expiresOn = this.getCurrentTimeInSeconds() + refreshResponse.body['expires_in'];
             console.log('Refreshed token. It now expires in ' + this.getTimeUntilTokenExpires() + ' seconds!');
