@@ -3579,6 +3579,12 @@ spotify-web-api-node@^2.3.6:
   dependencies:
     superagent "^2.0.0"
 
+spotify-web-api-node@kostasmanionis/spotify-web-api-node#player-api:
+  version "2.4.0"
+  resolved "https://codeload.github.com/kostasmanionis/spotify-web-api-node/tar.gz/75cdc3b6855003cacf38526be9f1cda34f14d11c"
+  dependencies:
+    superagent "^2.0.0"
+
 sprintf-js@^1.0.3:
   version "1.1.0"
   resolved "https://registry.yarnpkg.com/sprintf-js/-/sprintf-js-1.1.0.tgz#cffcaf702daf65ea39bb4e0fa2b299cec1a1be46"
