@@ -18,7 +18,7 @@ slackBot.startRTM(function (err) {
     }
 });
 
-const TYPES_MESSAGES = 'direct_message, direct_mention';
+const TYPES_MESSAGES = ['direct_message', 'direct_mention'];
 
 function getReply(message, action) {
     return `Sorry <@${message.user}>, I can't ${action} songs yet :shiba-sad:`;
