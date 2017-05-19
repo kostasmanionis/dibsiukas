@@ -23,7 +23,7 @@ module.exports = class SpotifyAuth {
         this.remoteApi = new SpotifyWebApi({
             clientId: process.env.SPOTIFY_CLIENT_ID,
             clientSecret: process.env.SPOTIFY_CLIENT_SECRET,
-            redirectUri: 'http://localhost:7777/auth'
+            redirectUri: `http://${process.env.AUTH_HOST}:7777/auth`
         });
     }
 
