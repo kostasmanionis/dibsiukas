@@ -7,6 +7,7 @@ const TOKEN_CACHE_LOCATION = './.token';
 module.exports = class SpotifyAuth {
 
     constructor() {
+        this.tokenData = {};
         this.setApi();
         this.loadTokensFromCache();
 
@@ -35,9 +36,12 @@ module.exports = class SpotifyAuth {
         }
     }
 
-    cacheTokenData(tokenData) {
-        this.tokenData = tokenData;
-        fs.writeFileSync(TOKEN_CACHE_LOCATION, JSON.stringify(tokenData), 'utf-8');
+    cacheTokenData(accessTokenData) {
+        const accessToken = accessTokenData.body['access_token'];
+        const refreshToken = accessTokenData.body['refresh_token'] || this.tokenData.refreshToken;
+        const expiresOn = this.getCurrentTimeInSeconds() + accessTokenData.body['expires_in'];
+        Object.assign(this.tokenData, {accessToken, refreshToken, expiresOn});
+        fs.writeFileSync(TOKEN_CACHE_LOCATION, JSON.stringify(this.tokenData), 'utf-8');
     }
 
     async handleReceivedAuthCode(token) {
@@ -50,18 +54,12 @@ module.exports = class SpotifyAuth {
     }
 
     async handleReceivedTokens(accessTokenData) {
-        const expiresOn = this.getCurrentTimeInSeconds() + accessTokenData.body['expires_in'];
-        this.cacheTokenData({
-            accessToken: accessTokenData.body['access_token'],
-            refreshToken: accessTokenData.body['refresh_token'],
-            expiresOn
-        });
-
+        this.cacheTokenData(accessTokenData);
         await this.setTokens();
     }
 
     async setTokens() {
-        if (this.tokenData) {
+        if (this.tokenData.refreshToken) {
             const {accessToken, refreshToken} = this.tokenData;
             this.remoteApi.setAccessToken(accessToken);
             this.remoteApi.setRefreshToken(refreshToken);
@@ -83,6 +81,7 @@ module.exports = class SpotifyAuth {
     }
 
     runTokenRefreshLoop() {
+        clearInterval(this.tokenRefreshInterval);
         this.tokenRefreshInterval = setInterval(this.onTokenRefreshLoopTick, 10000);
     }
 
@@ -97,8 +96,9 @@ module.exports = class SpotifyAuth {
     async onTokenRefreshLoopTick() {
         const expiresIn = this.getTimeUntilTokenExpires();
         if (expiresIn < 120) {
+            console.log('Attempting to refresh token');
             const refreshResponse = await this.remoteApi.refreshAccessToken();
-            this.tokenData.expiresOn = this.getCurrentTimeInSeconds() + refreshResponse.body['expires_in'];
+            this.cacheTokenData(refreshResponse);
             console.log('Refreshed token. It now expires in ' + this.getTimeUntilTokenExpires() + ' seconds!');
         } else if (expiresIn <= 0) {
             console.log('Can\'t refresh token. Need to reauthorize');
