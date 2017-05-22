@@ -3,6 +3,7 @@ const fs = require('fs');
 const express = require('express');
 
 const TOKEN_CACHE_LOCATION = './.token';
+const SPOTIFY_ACCESS_TOKEN_DURATION = process.env.SPOTIFY_ACCESS_TOKEN_DURATION || 120;
 
 module.exports = class SpotifyAuth {
 
@@ -95,7 +96,7 @@ module.exports = class SpotifyAuth {
 
     async onTokenRefreshLoopTick() {
         const expiresIn = this.getTimeUntilTokenExpires();
-        if (expiresIn < 120) {
+        if (expiresIn <= SPOTIFY_ACCESS_TOKEN_DURATION) {
             console.log('Attempting to refresh token');
             const refreshResponse = await this.remoteApi.refreshAccessToken();
             this.cacheTokenData(refreshResponse);
