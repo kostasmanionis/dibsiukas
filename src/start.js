@@ -30,8 +30,15 @@ controller.hears('connect spotify', TYPES_MESSAGES, async function (bot, message
 });
 
 controller.hears('playing', TYPES_MESSAGES, async function (bot, message) {
-    const currentTrackUri = await spotify.getCurrentTrackUri();
-    bot.reply(message, `<${currentTrackUri}>`);
+    const currentPlayBack = await spotify.getCurrentPlaybackState();
+    const isPlaying = currentPlayBack.is_playing;
+    const currentTrackUri = currentPlayBack.item.uri;
+
+    if (isPlaying) {
+        bot.reply(message, `<${currentTrackUri}>`);
+    } else {
+        bot.reply(message, `:no_entry_sign: :radio: :musical_note:`);
+    }
 });
 
 controller.hears('play next', TYPES_MESSAGES, async function (bot, message) {
