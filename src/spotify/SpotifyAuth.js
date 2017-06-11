@@ -41,9 +41,6 @@ module.exports = class SpotifyAuth {
         const accessToken = accessTokenData.body['access_token'];
         const refreshToken = accessTokenData.body['refresh_token'] || this.tokenData.refreshToken;
         const expiresOn = this.getCurrentTimeInSeconds() + accessTokenData.body['expires_in'];
-        // TODO: REMOVE TOKEN LOGGING
-        console.log('New access token', accessToken);
-        console.log('Old accessToken', this.tokenData.accessToken);
         Object.assign(this.tokenData, {accessToken, refreshToken, expiresOn});
         fs.writeFileSync(TOKEN_CACHE_LOCATION, JSON.stringify(this.tokenData), 'utf-8');
     }
@@ -102,7 +99,7 @@ module.exports = class SpotifyAuth {
         if (expiresIn <= SPOTIFY_ACCESS_TOKEN_DURATION) {
             console.log('Attempting to refresh token');
             const refreshResponse = await this.remoteApi.refreshAccessToken();
-            this.cacheTokenData(refreshResponse);
+            this.handleReceivedTokens(refreshResponse);
             console.log('Refreshed token. It now expires in ' + this.getTimeUntilTokenExpires() + ' seconds!');
         } else if (expiresIn <= 0) {
             console.log('Can\'t refresh token. Need to reauthorize');
@@ -128,18 +125,20 @@ module.exports = class SpotifyAuth {
     }
 
     setupAuthServer() {
-        this.app = express();
+        if (!this.authServer) {
+            this.authServer = express();
 
-        this.app.get('/auth', (req, res) => {
-            if (req.query.code) {
-                this.handleReceivedAuthCode(req.query.code);
-            }
-            res.send('Thanks!');
-        });
+            this.authServer.get('/auth', (req, res) => {
+                if (req.query.code) {
+                    this.handleReceivedAuthCode(req.query.code);
+                }
+                res.send('Thanks!');
+            });
 
-        this.app.listen(process.env.AUTH_PORT, function () {
-            console.log(`Authorization server listening on ${process.env.AUTH_PORT}!`);
-        });
+            this.authServer.listen(process.env.AUTH_PORT, function () {
+                console.log(`Authorization server listening on ${process.env.AUTH_PORT}!`);
+            });
+        }
     }
 
     initAuthorize() {
