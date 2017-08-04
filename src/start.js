@@ -1,28 +1,31 @@
 const botkit = require('botkit');
 const Spotify = require('./spotify/Spotify');
 
+const spotify = new Spotify();
 const controller = botkit.slackbot({
     disable_startup_messages: false // eslint-disable-line camelcase
 });
-
 const slackBot = controller.spawn({
     token: process.env.SLACK_BOT_TOKEN
 });
 
-const spotify = new Spotify();
+function connectToSlack() {
+    slackBot.startRTM(function (err) {
+        if (err) {
+            console.log(err);
+        }
+    });
+}
 
-slackBot.startRTM(function (err) {
-    if (err) {
-        console.log(err);
-        // throw new Error(err);
-    }
-});
+connectToSlack();
 
 const TYPES_MESSAGES = ['direct_message', 'direct_mention'];
 
 function getReply(message, action) {
     return `Sorry <@${message.user}>, I can't ${action} songs yet :shiba-sad:`;
 }
+
+controller.on('rtm_close', connectToSlack);
 
 controller.hears('connect spotify', TYPES_MESSAGES, async function (bot, message) {
     const authUrl = await spotify.initAuthorize();
