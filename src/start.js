@@ -1,5 +1,6 @@
 const botkit = require('botkit');
 const Spotify = require('./spotify/Spotify');
+const Tree = require('./tree/Tree');
 
 const spotify = new Spotify();
 const controller = botkit.slackbot({
@@ -8,6 +9,7 @@ const controller = botkit.slackbot({
 const slackBot = controller.spawn({
     token: process.env.SLACK_BOT_TOKEN
 });
+const tree = new Tree({treeHost: process.env.TREE_HOST});
 
 function connectToSlack() {
     slackBot.startRTM(function (err) {
@@ -95,4 +97,27 @@ controller.hears(['volume (.*)', 'volume'], TYPES_MESSAGES, async function (bot,
 
 controller.hears('help', TYPES_MESSAGES, function (bot, message) {
     bot.reply(message, 'Too lazy to add a help response :jack_o_lantern: :jack_o_lantern: :jack_o_lantern: ');
+});
+
+controller.hears(['tree (.*) (.*)', 'tree (.*)', 'tree'], TYPES_MESSAGES, function (bot, message) {
+    switch (message.match[1]) {
+        case 'animations': {
+            return tree.respondToAnimations(bot, message);
+        }
+        case 'start': {
+            return tree.respondToStart(bot, message, message.match[2]);
+        }
+        case 'stop': {
+            return tree.respondToStop(bot, message);
+        }
+        case 'on': {
+            return tree.respondToOn(bot, message);
+        }
+        case 'off': {
+            return tree.respondToOff(bot, message);
+        }
+        default: {
+            return bot.reply(message, 'What do you want from me?');
+        }
+    }
 });
