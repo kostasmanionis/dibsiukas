@@ -12,11 +12,12 @@ class Tree {
         this.treeHost = options.treeHost;
     }
 
-    async _doRequest(path, query) {
+    _doRequest(path, query) {
         try {
-            const result = await got(`http://${this.treeHost}/${path}`, {query});
+            const result = got(`http://${this.treeHost}/${path}`, {query});
             return result;
         } catch (err) {
+            console.log('err', err);
             return err;
         }
     }
@@ -47,8 +48,8 @@ class Tree {
         return err instanceof Error;
     }
 
-    respondToAnimations(bot, message) {
-        const result = this._getAnimations();
+    async respondToAnimations(bot, message) {
+        const result = await this._getAnimations();
         let reply;
         if (this.isError(result)) {
             reply = 'Sorry, couldn\'t get the animation list.';
@@ -59,8 +60,8 @@ class Tree {
         bot.reply(message, reply);
     }
 
-    respondToStart(bot, message, query) {
-        const result = this._startAnimation(query);
+    async respondToStart(bot, message, query) {
+        const result = await this._startAnimation(query);
         const body = JSON.parse(result.body);
         let reply;
         if (this.isError(result)) {
@@ -72,20 +73,20 @@ class Tree {
         bot.reply(message, reply);
     }
 
-    respondToStop(bot, message) {
-        const result = this._stopAnimation();
+    async respondToStop(bot, message) {
+        const result = await this._stopAnimation();
         let reply;
         if (this.isError(result)) {
             reply = 'Something went wrong, not sure if those animations stopped...';
         } else {
-            reply = 'Stopped tree animations.';
+            reply = 'Stopped the animation.';
         }
 
         bot.reply(message, reply);
     }
 
-    respondToOn(bot, message) {
-        const result = this._turnOn();
+    async respondToOn(bot, message) {
+        const result = await this._turnOn();
         let reply;
         if (this.isError(result)) {
             reply = 'Ummmm... Is it on? Something might\'ve gone wrong.';
@@ -96,8 +97,8 @@ class Tree {
         bot.reply(message, reply);
     }
 
-    respondToOff(bot, message) {
-        const result = this._turnOff();
+    async respondToOff(bot, message) {
+        const result = await this._turnOff();
         let reply;
         if (this.isError(result)) {
             reply = '...';
