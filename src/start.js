@@ -13,6 +13,7 @@ const controller = botkit.slackbot({
     // set up web endpoints for oauth, receiving webhooks, etc.
     controller.createWebhookEndpoints(controller.webserver);
     controller.startTicking();
+    connectToSlack();
 });
 const slackBot = controller.spawn({
     token: process.env.SLACK_BOT_TOKEN
@@ -35,7 +36,6 @@ function connectToSlack() {
         });
     });
 }
-connectToSlack();
 
 const TYPES_MESSAGES = ['direct_message', 'direct_mention'];
 
