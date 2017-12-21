@@ -4,12 +4,15 @@ const Tree = require('./tree/Tree');
 
 const spotify = new Spotify();
 const controller = botkit.slackbot({
+    debug: true,
     disable_startup_messages: false // eslint-disable-line camelcase
 });
 const slackBot = controller.spawn({
     token: process.env.SLACK_BOT_TOKEN
 });
 const tree = new Tree({treeHost: process.env.TREE_HOST});
+
+const MESSAGE_CALLBACK_ID_TREE_ANIMATIONS = 'tree_animation';
 
 function connectToSlack() {
     slackBot.startRTM(function (err) {
@@ -18,6 +21,16 @@ function connectToSlack() {
         }
     });
 }
+
+controller.setupWebserver(process.env.WEBHOOK_PORT, function(err,webserver) {
+
+  // set up web endpoints for oauth, receiving webhooks, etc.
+  controller
+    // .createHomepageEndpoint(controller.webserver)
+    // .createOauthEndpoints(controller.webserver)
+    .createWebhookEndpoints(controller.webserver);
+
+});
 
 connectToSlack();
 
@@ -120,4 +133,9 @@ controller.hears(['tree (.*) (.*)', 'tree (.*)', 'tree'], TYPES_MESSAGES, functi
             return bot.reply(message, 'What do you want from me?');
         }
     }
+});
+
+controller.on('interactive_message_callback', function (bot, message) {
+    console.log(message);
+    bot.reply(message, 'Thanks');
 });

@@ -12,12 +12,11 @@ class Tree {
         this.treeHost = options.treeHost;
     }
 
-    _doRequest(path, query) {
+    async _doRequest(path, query) {
         try {
-            const result = got(`http://${this.treeHost}/${path}`, {query});
-            return result;
+            const result = await got(`http://${this.treeHost}/${path}`, {query});
+            return JSON.parse(result.body);
         } catch (err) {
-            console.log('err', err);
             return err;
         }
     }
@@ -54,7 +53,25 @@ class Tree {
         if (this.isError(result)) {
             reply = 'Sorry, couldn\'t get the animation list.';
         } else {
-            reply = JSON.parse(result.body).map(item => item.name).join('\n');
+            reply = {
+                "text": "Choose an animation you want to play",
+                "attachments": [
+                    {
+                        "fallback": "You are unable to choose a game",
+                        "callback_id": "tree_animation",
+                        "color": "#3AA3E3",
+                        "attachment_type": "default",
+                        "actions": result.map(animation => {
+                            return {
+                                "name": "game",
+                                "text": animation.name,
+                                "type": "button",
+                                "value": animation.name
+                            };
+                        })
+                    }
+                ]
+            };
         }
 
         bot.reply(message, reply);
@@ -62,12 +79,11 @@ class Tree {
 
     async respondToStart(bot, message, query) {
         const result = await this._startAnimation(query);
-        const body = JSON.parse(result.body);
         let reply;
         if (this.isError(result)) {
-            reply = body.error;
+            reply = result.error;
         } else {
-            reply = body.message;
+            reply = result.message;
         }
 
         bot.reply(message, reply);
