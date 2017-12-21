@@ -4,34 +4,37 @@ const Tree = require('./tree/Tree');
 
 const spotify = new Spotify();
 const controller = botkit.slackbot({
-    debug: true,
-    disable_startup_messages: false // eslint-disable-line camelcase
+    disable_startup_messages: false, // eslint-disable-line camelcase
+    clientId: process.env.SLACK_CLIENT_ID,
+    clientSecret: process.env.SLACK_CLIENT_SECRET,
+    scopes: ['bot'],
+    json_file_store: __dirname + '/.data/db/'
+}).setupWebserver(process.env.WEBHOOK_PORT, function(err,webserver) {
+    // set up web endpoints for oauth, receiving webhooks, etc.
+    controller.createWebhookEndpoints(controller.webserver);
+    controller.startTicking();
 });
 const slackBot = controller.spawn({
     token: process.env.SLACK_BOT_TOKEN
 });
 const tree = new Tree({treeHost: process.env.TREE_HOST});
 
-const MESSAGE_CALLBACK_ID_TREE_ANIMATIONS = 'tree_animation';
-
 function connectToSlack() {
     slackBot.startRTM(function (err) {
         if (err) {
             console.log(err);
         }
+        const botData = slackBot.identifyBot();
+
+        controller.storage.teams.save({
+            id: botData.team_id,
+            bot: {
+                user_id: botData.id,
+                name: botData.name
+            }
+        });
     });
 }
-
-controller.setupWebserver(process.env.WEBHOOK_PORT, function(err,webserver) {
-
-  // set up web endpoints for oauth, receiving webhooks, etc.
-  controller
-    // .createHomepageEndpoint(controller.webserver)
-    // .createOauthEndpoints(controller.webserver)
-    .createWebhookEndpoints(controller.webserver);
-
-});
-
 connectToSlack();
 
 const TYPES_MESSAGES = ['direct_message', 'direct_mention'];
@@ -136,6 +139,5 @@ controller.hears(['tree (.*) (.*)', 'tree (.*)', 'tree'], TYPES_MESSAGES, functi
 });
 
 controller.on('interactive_message_callback', function (bot, message) {
-    console.log(message);
-    bot.reply(message, 'Thanks');
+    return tree.respondToStart(bot, message, message.actions[0].value);
 });

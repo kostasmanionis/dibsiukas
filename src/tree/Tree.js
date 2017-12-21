@@ -86,7 +86,7 @@ class Tree {
             reply = result.message;
         }
 
-        bot.reply(message, reply);
+        bot.replyInteractive(message, reply);
     }
 
     async respondToStop(bot, message) {
