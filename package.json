@@ -17,8 +17,9 @@
     "spotify-web-api-node": "kostasmanionis/spotify-web-api-node#player-api"
   },
   "devDependencies": {
+    "@kosman/eslint-config-kostas": "^1.0.1",
     "babel-eslint": "^7.2.3",
-    "eslint": "^3.19.0",
+    "eslint": "^4.19.1",
     "eslint-config-1stdibs": "^3.2.3",
     "eslint-plugin-flow-vars": "^0.5.0",
     "eslint-plugin-flowtype": "^2.33.0",

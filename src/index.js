@@ -1,2 +1,2 @@
 require('dotenv').config();
-require('./start.js');
+require('./initSlackBot.js');
