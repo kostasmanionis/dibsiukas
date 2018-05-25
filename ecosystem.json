@@ -1,0 +1,18 @@
+{
+    "apps": [
+        {
+            "name": "dibsiukas",
+            "script": "./dist/index.js"
+        }
+    ],
+    "deploy": {
+        "production": {
+            "user": "banksy",
+            "host": ["banksy.local"],
+            "ref": "origin/master",
+            "repo": "git@github.com:kostasmanionis/dibsiukas.git",
+            "path": "/Users/banksy/projects/dibsiukaz/",
+            "post-deploy": "yarn && yarn build && pm2 startOrRestart ecosystem.json"
+        }
+    }
+}
