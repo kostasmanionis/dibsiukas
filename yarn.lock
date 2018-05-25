@@ -4154,9 +4154,9 @@ split@0.3:
   dependencies:
     through "2"
 
-spotify-web-api-node@kostasmanionis/spotify-web-api-node#player-api:
-  version "2.4.0"
-  resolved "https://codeload.github.com/kostasmanionis/spotify-web-api-node/tar.gz/75cdc3b6855003cacf38526be9f1cda34f14d11c"
+spotify-web-api-node@^3.1.1:
+  version "3.1.1"
+  resolved "https://registry.npmjs.org/spotify-web-api-node/-/spotify-web-api-node-3.1.1.tgz#1e6d54f6df52c2184cf7d8fbf90759f6f60c9849"
   dependencies:
     superagent "^2.0.0"
 

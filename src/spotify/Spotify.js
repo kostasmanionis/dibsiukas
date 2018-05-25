@@ -1,13 +1,7 @@
 const SpotifyAuth = require('./SpotifyAuth');
-const {
-    getUriType,
-    TYPE_TRACK,
-    TYPE_ALBUM,
-    TYPE_PLAYLIST
-} = require('../utils/spotifyUtils');
+const { getUriType, TYPE_TRACK, TYPE_ALBUM, TYPE_PLAYLIST } = require('../utils/spotifyUtils');
 
 module.exports = class Spotify extends SpotifyAuth {
-
     constructor(options) {
         super(options);
 
@@ -16,13 +10,13 @@ module.exports = class Spotify extends SpotifyAuth {
 
     playTrack(trackUri) {
         this.remoteApi.play({
-            uris: [trackUri]
+            uris: [trackUri],
         });
     }
 
     playAlbumOrPlaylist(uri) {
         this.remoteApi.play({
-            context_uri: uri
+            context_uri: uri,
         });
     }
 
@@ -42,7 +36,7 @@ module.exports = class Spotify extends SpotifyAuth {
     }
 
     playNext() {
-        this.remoteApi.playNext();
+        this.remoteApi.skipToNext();
     }
 
     resume() {
@@ -60,7 +54,7 @@ module.exports = class Spotify extends SpotifyAuth {
     }
 
     async getCurrentTrackUri() {
-        const {item} = await this.getCurrentPlaybackState();
+        const { item } = await this.getCurrentPlaybackState();
 
         return item.uri;
     }
