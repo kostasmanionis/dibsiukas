@@ -1,6 +1,7 @@
 const botkit = require('botkit');
 const initTree = require('./tree/initTree');
 const initSpotify = require('./spotify/initSpotify');
+const { BOT_LISTENS_TO_MESSAGE_TYPES } = require('./constants/slackConstants');
 
 const controller = botkit
     .slackbot({
@@ -41,11 +42,9 @@ function connectToSlack() {
     });
 }
 
-const TYPES_MESSAGES = ['direct_message', 'direct_mention'];
-
 controller.on('rtm_close', connectToSlack);
 
-controller.hears('help', TYPES_MESSAGES, function(bot, message) {
+controller.hears('help', BOT_LISTENS_TO_MESSAGE_TYPES, function(bot, message) {
     bot.reply(
         message,
         'Too lazy to add a help response :jack_o_lantern: :jack_o_lantern: :jack_o_lantern: '
