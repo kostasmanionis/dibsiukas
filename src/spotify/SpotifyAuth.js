@@ -40,7 +40,7 @@ module.exports = class SpotifyAuth {
         const accessToken = accessTokenData.body['access_token'];
         const refreshToken = accessTokenData.body['refresh_token'] || this.tokenData.refreshToken;
         const expiresOn = this.getCurrentTimeInSeconds() + accessTokenData.body['expires_in'];
-        Object.assign(this.tokenData, { accessToken, refreshToken, expiresOn });
+        this.tokenData = { accessToken, refreshToken, expiresOn };
         fs.writeFileSync(TOKEN_CACHE_LOCATION, JSON.stringify(this.tokenData), 'utf-8');
     }
 
